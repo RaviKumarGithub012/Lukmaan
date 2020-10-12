@@ -1,0 +1,1 @@
+export const CHOOSE_COURSE = 'CHOOSE_COURSE';
