@@ -5,11 +5,12 @@ import { useNavigation } from "@react-navigation/native";
 import { videoThum } from "../assets/images/imageData";
 
 const CardBox = ({
-  title,
+  title = null,
   description,
   video_title,
   video_type,
   course_id,
+  lecture_quiz_id
 }) => {
   const navigation = useNavigation();
   return (
@@ -17,13 +18,13 @@ const CardBox = ({
       onPress={() =>
         navigation.navigate("singleVideo", {
           videoPath: `${course_id}/${video_title}.${video_type}`,
-          videoDtl: { title: video_title, dis: description },
+          videoData: { title: video_title, dis: description, quiz_id: lecture_quiz_id, id:course_id },
         })
       }
     >
       <View style={{ marginRight: 15, marginBottom: 20 }}>
         <Text numberOfLines={1} style={globalStyle.videoTitle}>
-          {title}
+          {video_title}
         </Text>
         {videoThum && (
           <Image

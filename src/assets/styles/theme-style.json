@@ -5,5 +5,7 @@
   "grayColor": "#838383",
   "text_color_1": "#84B72A",
   "text_color_2": "#061367",
-  "border_color": "#707070"
+  "border_color": "#707070",
+  "gray_color": "#EEEEEE",
+  "white": "#ffffff"
 }

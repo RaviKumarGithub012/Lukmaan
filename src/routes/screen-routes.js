@@ -8,7 +8,7 @@ import Registration from "../screens/credentials/registration/index";
 import Login from "../screens/credentials/login/index";
 import Verify from "../screens/credentials/verify";
 import StudentDashboard from "../screens/student-dashboard/student-dashboard";
-import SingleVideo from "../components/single-video";
+import SingleVideo from "../screens/singleVideo/index";
 import { AuthUser } from "../services/context/context";
 import {
   setAysnc,
