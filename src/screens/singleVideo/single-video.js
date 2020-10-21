@@ -4,9 +4,10 @@ import {
   View,
   StyleSheet,
   Dimensions,
-  ScrollView,
   BackHandler,
   StatusBar,
+  FlatList,
+  Alert,
 } from "react-native";
 import VideoToLeft from "../../components/video-to-left";
 import themeColors from "../../assets/styles/theme-style.json";
@@ -14,14 +15,19 @@ import * as ScreenOrientation from "expo-screen-orientation";
 import VideoPlayer from "expo-video-player";
 import { Video } from "expo-av";
 import { globalStyle } from "../../assets/styles/global-style";
+import Preloader from "../../components/preloader/preloader";
+import { event } from "react-native-reanimated";
 
 const { width, height } = Dimensions.get("window");
 
 const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
   const [fullScreen, setFullScreen] = useState(false);
+  const [isVideoError, setIsVideoError] = useState(false);
+  const [isPreloader, setIsPreloader] = useState(false);
   const [vWidth, setVWidth] = useState(width);
   const [vHeight, setvHeight] = useState(height);
   const [videoList, setVideoList] = useState([]);
+  const [isVideoDtl, setIsVideoDtl] = useState(null);
   const [videoId, setVideoId] = useState(null);
   const [videoDtl, setVideoDtl] = useState({
     title: '',
@@ -88,11 +94,61 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
     });
   }, []);
 
+  // const handleIsVideoIsAvailable = () => {
+  //   if(isVideoDtl !== null){
+  //     setVideoDtl({...isVideoDtl});
+  //   }
+  // }
   const handleVideoId = info => {
-    if(info){
-      const {title, dis, quiz_id} = info.data;
+    if(info && isVideoError === false){
+      // console.log(isVideoError, info, 'isVideoError');
       setVideoId(info.urlId);
+      const {title, dis, quiz_id} = info.data;
       setVideoDtl({...videoDtl, quiz_id: quiz_id, title: title, dis: dis});
+      setIsVideoDtl({quiz_id: quiz_id, title: title, dis: dis});
+      setIsPreloader(true);
+      setTimeout(() => {
+        setIsPreloader(false);
+      }, 2000);
+    }else{
+      Alert.alert("This video is not available!");
+    }
+  }
+
+  // useEffect(() => {
+  //   if(isVideoError === false){
+  //     handleIsVideoIsAvailable();
+  //   }
+  // }, [isVideoError, isVideoDtl]);
+
+const handleVideoError = e => {
+  console.log(e, 'e-->');
+  if(e.type.toLowerCase() === 'fatal'){
+    // setIsVideoError(false);
+    // Alert.alert("This video is not available!");
+  }else{
+    // setIsVideoError(true);
+  }
+}
+
+  const renderVideo = ({item}) =>{
+   return <VideoToLeft
+    key={item.course_id}
+    title={item.video_title}
+    description={item.description} 
+    video_type={item.video_type}
+    course_id={item.course_id}
+    handleVideoId={handleVideoId}
+    quiz_id={item.lecture_quiz_id}
+    />
+  }
+
+  const handlevideoCallBack = event => {
+    console.log(event?.error, 'event?.error');
+    if(event?.error){
+      // setIsVideoError(true);
+    }else{
+      // setIsVideoError(false);
     }
   }
 
@@ -106,13 +162,12 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
         }}
       >
         {
-          videoId !== null &&  <VideoPlayer
+          videoId !== null &&  
+          <VideoPlayer
           videoProps={{
             shouldPlay: false,
             resizeMode: Video.RESIZE_MODE_COVER,
-            source: {
-              uri: `http://15.207.23.184/storage/app/public/course/${videoId}`,
-            },
+            source: {uri: `${videosData?.video_path}${videoId}`,},
             isMuted: false,
             rate: 1,
             volume: 1,
@@ -123,11 +178,19 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
               right: 0,
             },
           }}
+          textStyle={{
+            color: themeColors.border_color,
+            fontSize: 14,
+            backgroundColor: '#000'
+          }}
           inFullscreen={fullScreen}
           switchToLandscape={() => setFullScreen(true)}
           switchToPortrait={() => setFullScreen(false)}
           width={vWidth}
           height={fullScreen ? vHeight - StatusBar.currentHeight + 5 : 250}
+          sliderColor={themeColors.border_color}
+          errorCallback={handleVideoError}
+          playbackCallback={handlevideoCallBack}
         />
         }
        
@@ -141,31 +204,29 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
         </Text>
       </View>
       <View style={styles.relatedVideos}>
-        <ScrollView style={{ paddingHorizontal: 20 }}>
           <View style={styles.moreVideos}>
             {
-              videoList && videoList.map(item => {
-                return <VideoToLeft
-                key={item.id}
-                title={item.video_title}
-                description={item.description} 
-                video_type={item.video_type}
-                course_id={item.course_id}
-                handleVideoId={handleVideoId}
-                quiz_id={item.lecture_quiz_id}
-                />
-              })
+              videoList && <FlatList 
+              data={videoList}
+              renderItem={renderVideo}
+              keyExtractor={item => item.id}
+              />
             }
           </View>
-        </ScrollView>
       </View>
+      {
+        isPreloader ? 
+        <Preloader />
+        : null
+      }
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   videoWrapper: {
-    backgroundColor: themeColors.gray_color
+    backgroundColor: themeColors.gray_color,
+    position: 'relative'
   },
   videoIcon: {
     height: 50,
@@ -173,11 +234,13 @@ const styles = StyleSheet.create({
   },
   moreVideos: {
     marginTop: 0,
+    paddingHorizontal: 10
   },
   textDtl: {
     paddingHorizontal: 20,
     paddingBottom: 10,
     paddingTop: 5,
+    backgroundColor: themeColors.white
   },
   relatedVideos: {
     flex: 1,

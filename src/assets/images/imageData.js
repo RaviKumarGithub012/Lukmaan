@@ -47,3 +47,4 @@ export const playIcon = require('./imageicons/play.png');
 export const pauseIcon = require('./imageicons/pause.png');
 export const fullScreenIcon = require('./imageicons/fullscreen.png');
 export const exitFullScreen = require('./imageicons/exit-fullscreen.png');
+export const loadingGif = require('./imageicons/loading.gif');

@@ -110,7 +110,6 @@ function ScreenRoutes() {
                 component={StudentDashboard}
               />
               <Stack.Screen name="singleVideo" component={SingleVideo} />
-              <Stack.Screen name="verify" component={Verify} />
             </>
           ) : (
             <>
@@ -120,6 +119,7 @@ function ScreenRoutes() {
               <Stack.Screen name="choose" component={ChooseCourse} />
               <Stack.Screen name="register" component={Registration} />
               <Stack.Screen name="login" component={Login} />
+              <Stack.Screen name="verify" component={Verify} />
             </>
           )}
         </Stack.Navigator>

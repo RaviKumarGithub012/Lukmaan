@@ -4,6 +4,7 @@ const Config = {
   loginApiUrl: {
     login: `${baseUrl}api/login`,
     registerstudent: `${baseUrl}api/registerstudent`,
+    loginOtp: `${baseUrl}api/sendOtp`,
   },
   coursesList: `${baseUrl}api/coursesList`,
   profile: `${baseUrl}api/update_profile`,

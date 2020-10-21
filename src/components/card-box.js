@@ -5,7 +5,6 @@ import { useNavigation } from "@react-navigation/native";
 import { videoThum } from "../assets/images/imageData";
 
 const CardBox = ({
-  title = null,
   description,
   video_title,
   video_type,
@@ -13,15 +12,13 @@ const CardBox = ({
   lecture_quiz_id
 }) => {
   const navigation = useNavigation();
+  const handleVideo = () => {
+    let videoBasePath = `${course_id}/${video_title}.${video_type}`;
+    let videoData = { title: video_title, dis: description, quiz_id: lecture_quiz_id, id:course_id };
+    navigation.navigate("singleVideo", {videoPath: videoBasePath,videoData: videoData,});
+  }
   return (
-    <TouchableWithoutFeedback
-      onPress={() =>
-        navigation.navigate("singleVideo", {
-          videoPath: `${course_id}/${video_title}.${video_type}`,
-          videoData: { title: video_title, dis: description, quiz_id: lecture_quiz_id, id:course_id },
-        })
-      }
-    >
+    <TouchableWithoutFeedback onPress={handleVideo} key={course_id}>
       <View style={{ marginRight: 15, marginBottom: 20 }}>
         <Text numberOfLines={1} style={globalStyle.videoTitle}>
           {video_title}

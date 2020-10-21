@@ -9,6 +9,7 @@ import Subjects from '../../../../components/subjects';
 import ShareWithFriends from '../../../../components/share';
 import { ecology, biology, art, geography } from '../../../../assets/images/imageData';
 import { getAsync } from '../../../../services/utils/AsyncStorage';
+import { videoPath } from '../../../../contexts/videoPath/videoPath';
 
 const data = [
   { id: 1, icon: ecology },
@@ -36,17 +37,19 @@ const Dashboard = ({ videosData, latestVideos }) => {
   }, []);
 
   return (
+    <videoPath.Provider value={{video_path: videosData?.video_path}}>
     <View style={[globalStyle.wrapper, { paddingBottom: 5 }]}>
       <ScreenHeader headerNav={true} isStudent={true} leftNotif={true} pageTitle={userName.first_name} rightCart={true} />
       <View style={{ marginTop: 50, flex: 1, marginLeft: 20 }}>
         <ScrollView>
-          <ThemeCarousel title="Latest Videos" data={videosData.payload} item={3} Layout={CardBox} />
+          <ThemeCarousel title="Latest Videos" data={videosData?.payload ? videosData.payload : VideoData} item={3} Layout={CardBox} />
           {/* <ThemeCarousel title="Viwed Videos" data={VideoData} item={3} Layout={CardBox} /> */}
           <ThemeCarousel title="Based on Your Preference" data={data} item={4} Layout={Subjects} />
           <ShareWithFriends />
         </ScrollView>
       </View>
     </View>
+    </videoPath.Provider>
   );
 }
 

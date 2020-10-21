@@ -42,10 +42,10 @@ const Registration = ({ navigation, route, userRegistration, userdata, setDefaul
   useEffect(() => {
     if (userdata !== undefined) {
       if (userdata.type == 'SUCCESS') {
-        console.log(userdata, 'true');
+        // console.log(userdata, 'true');
         signUp();
       } else {
-        console.log(userdata, 'false');
+        // console.log(userdata, 'false');
       }
     }
   }, [userdata]);

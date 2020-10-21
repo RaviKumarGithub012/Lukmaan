@@ -7,7 +7,7 @@ import themeColors from "./src/assets/styles/theme-style.json";
 import { preventScreenCaptureAsync } from "expo-screen-capture";
 
 const MainScreen = () => {
-  const [screen, setScreen] = useState(true);
+  const [screen, setScreen] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
