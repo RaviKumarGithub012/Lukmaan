@@ -6,7 +6,10 @@ const Config = {
     registerstudent: `${baseUrl}api/registerstudent`,
     loginOtp: `${baseUrl}api/sendOtp`,
   },
-  coursesList: `${baseUrl}api/coursesList`,
+  courses: {
+    myCourses: `${baseUrl}/api/myCourses`,
+    coursesList: `${baseUrl}api/coursesList`,
+  },
   profile: `${baseUrl}api/update_profile`,
   dashboardUrl: {
     latestVideos: `${baseUrl}api/dashboard`,

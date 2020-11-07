@@ -15,6 +15,7 @@ import {
   getAsync,
   removeAsync,
 } from "../services/utils/AsyncStorage";
+import { Alert } from "react-native";
 
 const Stack = createStackNavigator();
 
@@ -93,7 +94,7 @@ function ScreenRoutes() {
         console.error(err);
       }
     })();
-  }, [initialState.isSignedIn]);
+  }, [initialState?.isSignedIn]);
 
   return (
     <AuthUser.Provider value={AuthFun}>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,35 +7,32 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Image,
+  StyleSheet,
 } from "react-native";
-import { Formik } from "formik";
 import { globalStyle } from "../../../assets/styles/global-style";
 import ThemeButton from "../../../components/theme-btn";
 import ScreenHeader from "../../../components/header";
-import * as yup from "yup";
 import { error, valid } from "../../../assets/images/imageData";
-import { AuthUser } from "../../../services/context/context";
+import Regex from "../../../services/utils/regex";
 
-const LoginUser = yup.object({
-  number: yup.string().required().min(10).max(10),
-});
+const Login = ({ navigation }) => {
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isCorrect, setIsCorrect] = useState(null);
 
-const Login = ({ navigation, userLoginFun, setDefault, userData }) => {
-  const { signIn } = useContext(AuthUser);
-
-  const handleLogin = (values) => {
-    if (values?.number) {
-      // userLoginFun(values.number);
-      navigation.navigate("verify", { mobileNumber: values.number });
+  const handleLogin = () => {
+    if (isCorrect === true) {
+      navigation.navigate("verify", { mobileNumber: phoneNumber });
     }
   };
-  // useEffect(() => {
-  //   if (userData.status === true) signIn();
-  // }, [userData]);
 
-  // useEffect(() => {
-  //   return () => setDefault();
-  // }, []);
+  const handleBlur = () => {
+    let isCorrectNumber = Regex.phoneNumber.test(phoneNumber);
+    if (isCorrectNumber && phoneNumber.length === 10) {
+      setIsCorrect(true);
+    } else {
+      setIsCorrect(false);
+    }
+  };
 
   return (
     <View style={globalStyle.wrapper}>
@@ -51,53 +48,43 @@ const Login = ({ navigation, userLoginFun, setDefault, userData }) => {
         >
           <ScrollView>
             <View style={[globalStyle.wrapperPadding]}>
-              <Formik
-                initialValues={{ number: "" }}
-                onSubmit={(values) => handleLogin(values)}
-                validationSchema={LoginUser}
-              >
-                {({
-                  handleChange,
-                  handleSubmit,
-                  values,
-                  errors,
-                  touched,
-                  handleBlur,
-                }) => (
-                  <View>
-                    <View style={{ position: "relative" }}>
-                      <Text style={globalStyle.inputLabel}>Mobile Number</Text>
-                      <TextInput
-                        style={globalStyle.form_control}
-                        value={values.number}
-                        maxLength={10}
-                        onChangeText={handleChange("number")}
-                        onBlur={handleBlur("number")}
-                        keyboardType="numeric"
-                      />
-                      {touched.number && errors.number && (
-                        <Image style={globalStyle.inputImage} source={error} />
-                      )}
-                      {touched.number && !errors.number && (
-                        <Image style={globalStyle.inputImage} source={valid} />
-                      )}
-                    </View>
-
-                    <View style={{ marginTop: 30 }}>
-                      <ThemeButton onPress={handleSubmit} btnText="Login" />
-                      <Text style={globalStyle.termText_1}>
-                        Don’t have an account?{" "}
-                        <Text
-                          onPress={() => navigation.navigate("register")}
-                          style={globalStyle.termText_2}
-                        >
-                          Sign Up
-                        </Text>
-                      </Text>
-                    </View>
-                  </View>
+              <View>
+                <View style={{ position: "relative" }}>
+                  <Text style={globalStyle.inputLabel}>Mobile Number</Text>
+                  <TextInput
+                    style={globalStyle.form_control}
+                    value={phoneNumber}
+                    autoFocus={true}
+                    maxLength={10}
+                    onChangeText={(text) => setPhoneNumber(text)}
+                    onBlur={handleBlur}
+                    keyboardType="numeric"
+                  />
+                  {isCorrect === false && (
+                    <Image style={globalStyle.inputImage} source={error} />
+                  )}
+                  {isCorrect === true && (
+                    <Image style={globalStyle.inputImage} source={valid} />
+                  )}
+                </View>
+                {isCorrect === false && (
+                  <Text style={styles.errorMsg}>
+                    Please enter a correct mobile number!
+                  </Text>
                 )}
-              </Formik>
+                <View style={{ marginTop: 30 }}>
+                  <ThemeButton onPress={handleLogin} btnText="Login" />
+                  <Text style={globalStyle.termText_1}>
+                    Don’t have an account?{" "}
+                    <Text
+                      onPress={() => navigation.navigate("register")}
+                      style={globalStyle.termText_2}
+                    >
+                      Sign Up
+                    </Text>
+                  </Text>
+                </View>
+              </View>
             </View>
           </ScrollView>
         </View>
@@ -105,5 +92,13 @@ const Login = ({ navigation, userLoginFun, setDefault, userData }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  errorMsg: {
+    color: "red",
+    fontSize: 11,
+    marginTop: 2,
+  },
+});
 
 export default Login;

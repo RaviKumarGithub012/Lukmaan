@@ -18,7 +18,7 @@ import { setDefault } from "../../services/redux/credentional/registration/actio
 import { setAysnc } from "../../services/utils/AsyncStorage";
 
 const Verify = ({ userData, route, setDefault, userLoginFun }) => {
-  const { signIn } = useContext(AuthUser);
+  const { signIn, signUp } = useContext(AuthUser);
   const firstTextInputRef = useRef(null);
   const secondTextInputRef = useRef(null);
   const thirdTextInputRef = useRef(null);
@@ -26,7 +26,9 @@ const Verify = ({ userData, route, setDefault, userLoginFun }) => {
   const [otpArray, setOtpArray] = useState(["", "", "", ""]);
 
   useEffect(() => {
-    userLoginFun(route.params.mobileNumber);
+    if (!route?.params?.newUserData) {
+      userLoginFun(route.params.mobileNumber);
+    }
     return () => setDefault();
   }, []);
 
@@ -60,15 +62,33 @@ const Verify = ({ userData, route, setDefault, userLoginFun }) => {
       }
       const finalOtp = otpArrayCopy.join("");
       if (finalOtp.length === 4) {
-        const { payload } = userData;
-        if (finalOtp == payload?.otp) {
-          (async () => {
-            await setAysnc("loginDetails", payload);
-            await setAysnc("userToken", JSON.stringify(payload.api_token));
-          })();
-          signIn();
+        if (route?.params?.newUserData) {
+          if (finalOtp == route?.params?.newUserOtp) {
+            (async () => {
+              await setAysnc(
+                "loginDetails",
+                route?.params?.newUserData?.payload
+              );
+              await setAysnc(
+                "userToken",
+                JSON.stringify(route?.params?.newUserData?.payload?.api_token)
+              );
+            })();
+            signUp();
+          } else {
+            Alert.alert("OTP is not correct please try again!");
+          }
         } else {
-          Alert.alert("OTP is not correct please try again!");
+          const { payload } = userData;
+          if (finalOtp == payload?.otp) {
+            (async () => {
+              await setAysnc("loginDetails", payload);
+              await setAysnc("userToken", JSON.stringify(payload.api_token));
+            })();
+            signIn();
+          } else {
+            Alert.alert("OTP is not correct please try again!");
+          }
         }
       }
     }
@@ -94,10 +114,12 @@ const Verify = ({ userData, route, setDefault, userLoginFun }) => {
             style={[
               themeColors.text_color_2,
               globalStyle.inputLabel,
-              { textAlign: "center" },
+              { textAlign: "center", paddingHorizontal: 20 },
             ]}
           >
-            We will send you an OTP to verify
+            {route?.params?.registered
+              ? route?.params?.registered
+              : "We will send you an OTP to verify"}
           </Text>
           <Text
             style={[
