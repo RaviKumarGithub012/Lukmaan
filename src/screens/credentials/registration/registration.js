@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -22,7 +22,6 @@ import {
   defaultImg,
 } from "../../../assets/images/imageData";
 import { globalStyle } from "../../../assets/styles/global-style";
-// import { AuthUser } from "../../../services/context/context";
 
 const RegistrUser = yup.object({
   name: yup.string().required(),
@@ -38,7 +37,6 @@ const Registration = ({
   userdata,
   setDefault,
 }) => {
-  // const { signUp } = useContext(AuthUser);
   var [term, setTerm] = useState(false);
 
   const TermChange = () => setTerm(!term);
@@ -57,13 +55,11 @@ const Registration = ({
   useEffect(() => {
     if (userdata !== undefined) {
       if (userdata.type == "SUCCESS") {
-        console.log(userdata, "true");
         navigation.navigate("verify", {
           newUserOtp: userdata?.payload?.otp,
           newUserData: userdata,
         });
       } else {
-        console.log(userdata?.payload, "userdata?.payload");
         if (userdata?.payload)
           navigation.navigate("verify", {
             newUserOtp: userdata?.payload?.otp,

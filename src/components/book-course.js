@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   courseHeading: {
     color: themeColors.text_color_2,
     fontWeight: "700",
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 5,
   },
   bookTxt: {

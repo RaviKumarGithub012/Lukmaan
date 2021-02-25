@@ -15,7 +15,7 @@ import {
   getAsync,
   removeAsync,
 } from "../services/utils/AsyncStorage";
-import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createStackNavigator();
 
@@ -58,7 +58,10 @@ function ScreenRoutes() {
 
   const AuthFun = useMemo(
     () => ({
-      signIn: () => {
+      signIn: async (token, userDtl) => {
+        console.log(token, userDtl, "login_token");
+        await AsyncStorage.setItem("loginDetails", JSON.stringify(userDtl));
+        await AsyncStorage.setItem("userToken", JSON.stringify(token));
         dispatch({ type: "SIGN_IN" });
       },
       signOut: async () => {

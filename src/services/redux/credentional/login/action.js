@@ -1,6 +1,5 @@
 import { USERLOGIN } from "./type";
 import Config from "../../../config/config";
-import { setAysnc } from "../../../utils/AsyncStorage";
 
 export const userLoginFun = (phone_number) => {
   return (dispatch) => {

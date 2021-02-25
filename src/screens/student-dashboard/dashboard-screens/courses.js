@@ -30,15 +30,7 @@ const Courses = ({ myCourses, getCoursesList }) => {
           <FlatList
             data={myCourses}
             renderItem={({ item }) => {
-              return (
-                <BookCourse
-                  title={item.course_title}
-                  // days="Mon, Wed, Fri"
-                  // time="17:30 - 18:30"
-                  // student="1 Student"
-                  // locationAt="At Home"
-                />
-              );
+              return <BookCourse title={item.course_title} />;
             }}
             keyExtractor={(item) => item.id}
           />

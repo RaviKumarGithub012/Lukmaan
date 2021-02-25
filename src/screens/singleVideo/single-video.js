@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createRef, Fragment } from "react";
 import {
   Text,
   View,
@@ -8,6 +8,8 @@ import {
   StatusBar,
   FlatList,
   Alert,
+  TouchableOpacity,
+  Image,
 } from "react-native";
 import VideoToLeft from "../../components/video-to-left";
 import themeColors from "../../assets/styles/theme-style.json";
@@ -16,16 +18,21 @@ import VideoPlayer from "expo-video-player";
 import { Video } from "expo-av";
 import { globalStyle } from "../../assets/styles/global-style";
 import Preloader from "../../components/preloader/preloader";
+import { backward, forward, playIcon } from "../../assets/images/imageData";
+import { Picker } from "@react-native-community/picker";
+import { AntDesign } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 const { width, height } = Dimensions.get("window");
 
 const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
   const [fullScreen, setFullScreen] = useState(false);
-  const [isVideoError, setIsVideoError] = useState(false);
+  const [isTouched, setIsTouched] = useState(false);
   const [isPreloader, setIsPreloader] = useState(false);
   const [vWidth, setVWidth] = useState(width);
   const [vHeight, setvHeight] = useState(height);
   const [videoList, setVideoList] = useState([]);
+  const [rate, setRate] = useState(1.0);
   const [isVideoDtl, setIsVideoDtl] = useState(null);
   const [videoId, setVideoId] = useState(null);
   const [videoDtl, setVideoDtl] = useState({
@@ -33,6 +40,8 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
     dis: "",
     quiz_id: "",
   });
+
+  let videoRef = createRef();
 
   useEffect(() => {
     if (route?.params?.videoPath) {
@@ -96,7 +105,7 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
   }, []);
 
   const handleVideoId = (info) => {
-    if (info && isVideoError === false) {
+    if (info !== undefined && info !== null) {
       setVideoId(info.urlId);
       const { title, dis, quiz_id } = info.data;
       setVideoDtl({ ...videoDtl, quiz_id: quiz_id, title: title, dis: dis });
@@ -107,15 +116,6 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
       }, 2000);
     } else {
       Alert.alert("This video is not available!");
-    }
-  };
-
-  const handleVideoError = (e) => {
-    if (e.type.toLowerCase() === "fatal") {
-      // setIsVideoError(false);
-      // Alert.alert("This video is not available!");
-    } else {
-      // setIsVideoError(true);
     }
   };
 
@@ -133,13 +133,63 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
     );
   };
 
-  const handlevideoCallBack = (event) => {
-    if (event?.error) {
-      // setIsVideoError(true);
-    } else {
-      // setIsVideoError(false);
-    }
+  const handleVideoRef = (component) => {
+    videoRef = component;
   };
+
+  const handleBackward = async () => {
+    const getCurrentStatus = await videoRef.getStatusAsync();
+    videoRef.setPositionAsync(Number(getCurrentStatus?.positionMillis) - 10000);
+    videoRef.playAsync();
+  };
+  const handleForward = async () => {
+    const getCurrentStatus = await videoRef.getStatusAsync();
+    videoRef.setPositionAsync(Number(getCurrentStatus?.positionMillis) + 10000);
+    videoRef.playAsync();
+  };
+
+  const handlePlaybackSpeed = async (itemValue) => {
+    setRate(itemValue);
+    videoRef.setRateAsync(itemValue, true, true);
+  };
+
+  useEffect(() => {
+    if (isTouched && isTouched !== undefined && isTouched !== null) {
+      setTimeout(() => {
+        setIsTouched(false);
+      }, 5000);
+    }
+  }, [isTouched]);
+  const playIcon = () => () => (
+    <View
+      style={{
+        marginLeft: "auto",
+        marginRight: "auto",
+        height: 60,
+        width: 60,
+        backgroundColor: themeColors.white,
+        borderRadius: 30,
+        padding: 16,
+      }}
+    >
+      <AntDesign name="caretright" size={26} color="black" />
+    </View>
+  );
+  const pauseIcon = () => () => (
+    <View
+      style={{
+        marginLeft: "auto",
+        marginRight: "auto",
+        height: 60,
+        width: 60,
+        backgroundColor: themeColors.white,
+        borderRadius: 30,
+        padding: 16,
+      }}
+    >
+      <FontAwesome name="pause" size={26} color="black" />
+    </View>
+  );
 
   return (
     <View style={[globalStyle.wrapper, styles.videoWrapper]}>
@@ -149,6 +199,7 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
           paddingTop: 0,
           zIndex: 0,
         }}
+        onTouchStart={() => setIsTouched(true)}
       >
         {videoId !== null && (
           <VideoPlayer
@@ -157,8 +208,8 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
               resizeMode: Video.RESIZE_MODE_COVER,
               source: { uri: `${videosData?.video_path}${videoId}` },
               isMuted: false,
-              rate: 1,
               volume: 1,
+              videoRef: handleVideoRef,
               style: {
                 position: "absolute",
                 left: 0,
@@ -167,7 +218,7 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
               },
             }}
             textStyle={{
-              color: themeColors.border_color,
+              color: themeColors.white,
               fontSize: 14,
               backgroundColor: "#000",
             }}
@@ -176,11 +227,38 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
             switchToPortrait={() => setFullScreen(false)}
             width={vWidth}
             height={fullScreen ? vHeight - StatusBar.currentHeight + 5 : 250}
-            sliderColor={themeColors.border_color}
-            errorCallback={handleVideoError}
-            playbackCallback={handlevideoCallBack}
+            sliderColor={themeColors.white}
+            playIcon={playIcon()}
+            pauseIcon={pauseIcon()}
           />
         )}
+        {isTouched ? (
+          <Fragment>
+            <View style={styles.playbackSpeed}>
+              <Picker
+                style={{ width: 100, height: 30 }}
+                selectedValue={rate}
+                onValueChange={(itemValue) => handlePlaybackSpeed(itemValue)}
+              >
+                <Picker.Item label="1x" value={1.0} />
+                <Picker.Item label="2x" value={2.0} />
+                <Picker.Item label="3x" value={5.0} />
+              </Picker>
+            </View>
+            <TouchableOpacity
+              style={[styles.rateIcon, { left: "25%" }]}
+              onPress={handleBackward}
+            >
+              <Image source={backward} style={styles.rateIconImage} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.rateIcon, { right: "25%" }]}
+              onPress={handleForward}
+            >
+              <Image source={forward} style={styles.rateIconImage} />
+            </TouchableOpacity>
+          </Fragment>
+        ) : null}
       </View>
       <View style={styles.textDtl}>
         <Text numberOfLines={1} style={styles.videoTitle}>
@@ -207,6 +285,32 @@ const SingleVideo = ({ navigation, route, latestVideos, videosData }) => {
 };
 
 const styles = StyleSheet.create({
+  video: {
+    width: 300,
+    height: 300,
+  },
+  playbackSpeed: {
+    position: "absolute",
+    top: 20,
+    left: "45%",
+    backgroundColor: "rgba(255,255,255,1)",
+    zIndex: 1,
+    width: 30,
+    overflow: "hidden",
+  },
+  rateIcon: {
+    position: "absolute",
+    top: "40%",
+    zIndex: 1,
+    backgroundColor: "rgba(255,255,255,1)",
+    padding: 10,
+    borderRadius: 30,
+  },
+  rateIconImage: {
+    resizeMode: "stretch",
+    height: 35,
+    width: 30,
+  },
   videoWrapper: {
     backgroundColor: themeColors.gray_color,
     position: "relative",

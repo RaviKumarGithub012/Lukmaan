@@ -13,8 +13,8 @@ import {
   art,
   geography,
 } from "../../../../assets/images/imageData";
-import { getAsync } from "../../../../services/utils/AsyncStorage";
 import { videoPath } from "../../../../contexts/videoPath/videoPath";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const data = [
   { id: 1, icon: ecology },
@@ -30,16 +30,25 @@ const Dashboard = ({ videosData, latestVideos }) => {
   useEffect(() => {
     (async () => {
       try {
-        await latestVideos();
-        const name = await getAsync("loginDetails");
+        const name = await AsyncStorage.getItem("loginDetails");
         if (JSON.parse(name)) {
           setUserName(JSON.parse(name));
         }
+        await latestVideos();
       } catch (err) {
         console.error(err);
       }
     })();
   }, []);
+
+  // useEffect(() => {
+  //   try {
+  //    (async() => {
+  //    })();
+  //   } catch (error) {
+
+  //   }
+  // }, []);
 
   return (
     <videoPath.Provider value={{ video_path: videosData?.video_path }}>

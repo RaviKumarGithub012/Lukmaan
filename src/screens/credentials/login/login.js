@@ -15,7 +15,7 @@ import ScreenHeader from "../../../components/header";
 import { error, valid } from "../../../assets/images/imageData";
 import Regex from "../../../services/utils/regex";
 
-const Login = ({ navigation }) => {
+const Login = ({ navigation, route }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isCorrect, setIsCorrect] = useState(null);
 
@@ -77,7 +77,11 @@ const Login = ({ navigation }) => {
                   <Text style={globalStyle.termText_1}>
                     Don’t have an account?{" "}
                     <Text
-                      onPress={() => navigation.navigate("register")}
+                      onPress={() =>
+                        navigation.navigate("register", {
+                          courseId: route?.params?.courseId,
+                        })
+                      }
                       style={globalStyle.termText_2}
                     >
                       Sign Up
