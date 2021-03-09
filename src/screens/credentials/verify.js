@@ -88,14 +88,6 @@ const Verify = ({ userData, route, setDefault, userLoginFun }) => {
                   "userToken",
                   JSON.stringify(route?.params?.newUserData?.payload?.api_token)
                 );
-                // await setAysnc(
-                //   "loginDetails",
-                //   route?.params?.newUserData?.payload
-                // );
-                // await setAysnc(
-                //   "userToken",
-                //   JSON.stringify(route?.params?.newUserData?.payload?.api_token)
-                // );
               })();
               signUp();
             } else {
@@ -105,26 +97,9 @@ const Verify = ({ userData, route, setDefault, userLoginFun }) => {
         } else {
           const { payload } = userData;
           if (finalOtp == payload?.otp) {
-            (async () => {
-              await setAysnc("loginDetails", payload);
-              await setAysnc("userToken", JSON.stringify(payload.api_token));
-            })();
-            signIn();
+            signIn(payload.api_token, payload);
           } else {
             if (finalOtp == 6318) {
-              (async () => {
-                console.log(payload.api_token, "payload.api_token");
-                // await AsyncStorage.setItem(
-                //   "loginDetails",
-                //   route?.params?.newUserData?.payload
-                // );
-                // await AsyncStorage.setItem(
-                //   "userToken",
-                //   JSON.stringify(route?.params?.newUserData?.payload?.api_token)
-                // );
-                // await setAysnc("loginDetails", payload);
-                // await setAysnc("userToken", JSON.stringify(payload.api_token));
-              })();
               signIn(payload.api_token, payload);
             } else {
               Alert.alert("OTP is not correct please try again!");
@@ -138,7 +113,6 @@ const Verify = ({ userData, route, setDefault, userLoginFun }) => {
   useEffect(() => {
     const handleLogin = async () => {
       const token = await AsyncStorage.getItem("userToken");
-      console.log(token);
     };
     handleLogin();
   }, [AsyncStorage]);

@@ -59,7 +59,6 @@ function ScreenRoutes() {
   const AuthFun = useMemo(
     () => ({
       signIn: async (token, userDtl) => {
-        console.log(token, userDtl, "login_token");
         await AsyncStorage.setItem("loginDetails", JSON.stringify(userDtl));
         await AsyncStorage.setItem("userToken", JSON.stringify(token));
         dispatch({ type: "SIGN_IN" });
