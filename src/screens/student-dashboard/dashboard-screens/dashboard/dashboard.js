@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Share } from "react-native";
 import { globalStyle } from "../../../../assets/styles/global-style";
 import { VideoData } from "../../../videos-data";
 import CardBox from "../../../../components/card-box";
@@ -41,14 +41,25 @@ const Dashboard = ({ videosData, latestVideos }) => {
     })();
   }, []);
 
-  // useEffect(() => {
-  //   try {
-  //    (async() => {
-  //    })();
-  //   } catch (error) {
-
-  //   }
-  // }, []);
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message:
+          "React Native | A framework for building native apps using React",
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <videoPath.Provider value={{ video_path: videosData?.video_path }}>
@@ -75,7 +86,7 @@ const Dashboard = ({ videosData, latestVideos }) => {
               item={4}
               Layout={Subjects}
             />
-            <ShareWithFriends />
+            <ShareWithFriends onShare={onShare} />
           </ScrollView>
         </View>
       </View>

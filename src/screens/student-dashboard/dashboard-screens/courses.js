@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, FlatList } from "react-native";
 import { globalStyle } from "../../../assets/styles/global-style";
 import ScreenHeader from "../../../components/header";
@@ -8,9 +8,19 @@ import { bindActionCreators } from "redux";
 import { getCoursesList } from "../../../services/redux/myCourses/action";
 
 const Courses = ({ myCourses, getCoursesList }) => {
+  const [courseData, setcourseData] = useState([]);
   useEffect(() => {
     if (getCoursesList) getCoursesList();
   }, [getCoursesList]);
+
+  useEffect(() => {
+    if (myCourses !== undefined && myCourses !== null) {
+      const filterData = myCourses?.filter(
+        (item) => Number(item.subscribed) === 1
+      );
+      setcourseData([...filterData]);
+    }
+  }, [myCourses]);
 
   return (
     <View style={globalStyle.wrapper}>
@@ -26,9 +36,9 @@ const Courses = ({ myCourses, getCoursesList }) => {
           paddingHorizontal: 10,
         }}
       >
-        {myCourses && (
+        {courseData && (
           <FlatList
-            data={myCourses}
+            data={courseData}
             renderItem={({ item }) => {
               return <BookCourse title={item.course_title} />;
             }}

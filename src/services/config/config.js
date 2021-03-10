@@ -7,7 +7,7 @@ const Config = {
     loginOtp: `${baseUrl}api/sendOtp`,
   },
   courses: {
-    myCourses: `${baseUrl}/api/myCourses`,
+    myCourses: `${baseUrl}api/myCourses`,
     coursesList: `${baseUrl}api/coursesList`,
   },
   profile: `${baseUrl}api/update_profile`,

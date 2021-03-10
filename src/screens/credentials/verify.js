@@ -18,6 +18,8 @@ import { userLoginFun } from "../../services/redux/credentional/login/action";
 import { setDefault } from "../../services/redux/credentional/registration/action";
 import { setAysnc } from "../../services/utils/AsyncStorage";
 import * as SecureStore from "expo-secure-store";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/core";
 
 const Verify = ({ userData, route, setDefault, userLoginFun }) => {
   const { signIn, signUp } = useContext(AuthUser);
@@ -26,6 +28,7 @@ const Verify = ({ userData, route, setDefault, userLoginFun }) => {
   const thirdTextInputRef = useRef(null);
   const fourthTextInputRef = useRef(null);
   const [otpArray, setOtpArray] = useState(["", "", "", ""]);
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (!route?.params?.newUserData) {
@@ -179,8 +182,13 @@ const Verify = ({ userData, route, setDefault, userLoginFun }) => {
               ))}
             </View>
             <Text style={[globalStyle.termText_1, { marginTop: 15 }]}>
-              Don’t have an account?{" "}
-              <Text style={globalStyle.termText_2}>Sign Up</Text>
+              Don’t have an account?
+              <Text
+                style={globalStyle.termText_2}
+                onPress={() => navigation.navigate("register")}
+              >
+                Sign Up
+              </Text>
             </Text>
           </View>
         </ScrollView>
